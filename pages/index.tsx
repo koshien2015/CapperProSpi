@@ -2,8 +2,8 @@ import useSWR from "swr";
 import TabView from "../components/TabView";
 import { InitialLeague, Match, Welcome } from "../types/LeagueType";
 import { useMemo, useCallback } from "react";
-export default function Home() {
-  const { data: league } = useSWR("league", async () => await fetcher());
+const Home:React.FC<{ league?: { [key: string]: Welcome } }>=({league})=>{
+  //const { data: league } = useSWR("league", async () => await fetcher());
   const TabContent: React.FC<{ league?: InitialLeague }> = ({ league }) => {
     const result = useMemo(() => {
       let ret: { [team: string]: { win: number; lose: number } } = {};
@@ -292,7 +292,29 @@ export default function Home() {
 }
 
 export const fetcher = async () => {
-  const res = await fetch("/api/league");
-  const data: { [key: string]: Welcome } = await res.json();
+  const responseA = await fetch(
+    "https://the-tournament.net/_next/data/9n8vnpYlyQ87sb9Rdtr8M/ja/leagues/7jX0nl1ebAJA4hEqQGoc.json?id=7jX0nl1ebAJA4hEqQGoc"
+  );
+  const dataA = await responseA.json();
+  const responseB = await fetch(
+    "https://the-tournament.net/_next/data/9n8vnpYlyQ87sb9Rdtr8M/ja/leagues/vRCpUcyskgKDtKbr4CHT.json?id=vRCpUcyskgKDtKbr4CHT"
+  );
+  const dataB = await responseB.json();
+  const responseC = await fetch(
+    "https://the-tournament.net/_next/data/9n8vnpYlyQ87sb9Rdtr8M/ja/leagues/gjzpb571WZX6Kng2pSz3.json?id=gjzpb571WZX6Kng2pSz3"
+  );
+  const dataC = await responseC.json();
+  const data: { [key: string]: Welcome } = { dataA, dataB, dataC }
   return data;
 };
+
+export const getStaticProps=async()=>{
+  const league = await fetcher()
+  return{
+    props: {
+      league
+    }
+  }
+}
+
+export default Home
